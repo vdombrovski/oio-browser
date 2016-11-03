@@ -1,0 +1,91 @@
+/*
+$clr-blue    : #1781ff;
+$clr-blue2   : #003366;
+
+$clr-white   : #ffffff;
+$clr-coldgrey: #ced3d9;
+$clr-grey10  : #ecf0f1;
+$clr-grey15  : #d3dade;
+$clr-grey30  : #adb1b7;
+$clr-grey20  : #ffffcc;
+$clr-grey45  : #a6a6a6;
+$clr-grey55  : #959595;
+$clr-grey70  : #4d4d4d;
+$clr-black   : #000000;
+
+$clr-status-ok: #1781ff;
+$clr-status-pend : #f6931e;
+$clr-status-fail: #8b272d;
+*/
+
+.sidebar {
+  background: #ecf0f1;
+  height: 100vh;
+}
+
+.divider {
+  height: 1px;
+  width:100%;
+  display:block;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #1781ff;
+}
+
+.gray {
+  color: #4d4d4d;
+}
+
+.lightgray {
+  color: #adb1b7;
+}
+
+.nav > li.active > a {
+    background-color: #1781ff;
+    cursor: default;
+}
+.nav > li.active > a:hover {
+    background-color: #1781ff;
+    cursor: default;
+}
+
+.nav > li > a:hover {
+    background-color: #CCE4FF;
+}
+
+.drop-zone {
+  height: 120px;
+  border: 3px dashed #ced3d9;
+  border-radius: 10px;
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 30px;
+  font-size: 20px;
+  color: #ced3d9;
+  z-index: 50;
+}
+
+.drop-zone .glyphicon {
+  font-size: 30px !important;
+}
+
+.nv-file-over {
+  border: 3px dashed #1781ff;
+  color: #1781ff;
+}
+
+.infoArea {
+  height: auto;
+  padding: 10px;
+  background: #ecf0f1;
+}
+
+.main {
+  height: 100vh;
+}
+
+.pull-bottom {
+  width: 98%;
+  position: absolute;
+  bottom: 0;
+}

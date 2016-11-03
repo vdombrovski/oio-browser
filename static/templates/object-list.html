@@ -1,0 +1,17 @@
+<div class="col-md-12 infoArea">
+  <ng-include src="'templates/searchbar.html'"></ng-include>
+</div>
+<table ng-show="objects.length > 0" class="table table-striped">
+  <tr>
+    <th>Name</th>
+    <th>Size</th>
+    <th>&nbsp;</th>
+  </tr>
+  <tr ng-repeat='obj in objects'>
+    <td>{{obj.name}}</td>
+    <td>{{obj.size | filesize}}</td>
+    <td><a href="{{download(obj.name)}}" class="glyphicon glyphicon-download-alt" aria-hidden="true"></a></td>
+  </tr>
+</table>
+<div class="col-md-12 text-center" ng-show="(objects.length == 0 && searchedObject.s.length == 0)"><h3 class="lightgray">This container is empty</h3></div>
+<div class="col-md-12 text-center" ng-show="(objects.length == 0 && searchedObject.s.length > 0 && didSearch)"><h3 class="lightgray">No results</h3></div>

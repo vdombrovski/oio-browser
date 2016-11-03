@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenIO Browser</title>
+    <script type='text/javascript' src='vendor/angular.min.js'></script>
+    <script type='text/javascript' src='vendor/angular-file-upload.min.js'></script>
+    <script type='text/javascript' src='app/app.js'></script>
+    <script type='text/javascript' src='app/apiRequest.service.js'></script>
+    <script type='text/javascript' src='app/browser.controller.js'></script>
+    <script type='text/javascript' src='app/fileSize.filter.js'></script>
+    <script type='text/javascript' src='app/dragleaveFix.directive.js'></script>
+    <link rel="stylesheet" type="text/css" href="static/vendor/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body ng-app='oioBrowser' ng-controller='browserController'>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 sidebar">
+        <ng-include src="'templates/sidebar.html'"></ng-include>
+      </div>
+      <div class="col-md-9 main">
+        <ng-include src="'templates/object-list.html'"></ng-include>
+        <ng-include src="'templates/dropzone.html'"></ng-include>
+      </div>
+    </div>
+
+
+</div>
+</body>
+</html>
