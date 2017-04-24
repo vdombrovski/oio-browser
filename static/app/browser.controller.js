@@ -15,6 +15,7 @@ function getController($scope, apiRequest, FileUploader) {
   $scope.apiRequest = new apiRequest();
 
   $scope.download = getDownloadUrl;
+  $scope.preview = getPreviewUrl;
   $scope.changeCurrentContainer = changeContainer;
   $scope.doSearch = doSearch;
 
@@ -47,6 +48,10 @@ function getController($scope, apiRequest, FileUploader) {
 
   function getDownloadUrl(name) {
     return "/api/containers/" + $scope.currentCont + "/objects/" + name + "/download";
+  }
+
+  function getPreviewUrl(name) {
+    return "/api/containers/" + $scope.currentCont + "/objects/" + name + "/preview";
   }
 
   function changeContainer(name) {

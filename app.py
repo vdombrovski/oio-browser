@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory, request, jsonify, Response
 from oio.api.object_storage import ObjectStorageAPI
 import optparse
+import mimetypes
 
 
 def parse():
@@ -11,6 +12,11 @@ def parse():
     parser.add_option("-p", "--port", help="OpenIO browser ports")
     options, _ = parser.parse_args()
     return options
+
+def get_extensions_for_type(general_type):
+    for ext in mimetypes.types_map:
+        if mimetypes.types_map[ext].split('/')[0] == general_type:
+            yield ext
 
 
 def init_sds_osapi(ns, url):
@@ -30,9 +36,12 @@ ACCOUNT = options.account or 'default'
 API = init_sds_osapi(NAMESPACE, PROXY_URL)
 
 # Create some containers for now
-API.container_create(ACCOUNT, "Documents")
-API.container_create(ACCOUNT, "Cat Videos")
-API.container_create(ACCOUNT, "Work")
+#API.container_create(ACCOUNT, "Documents")
+#API.container_create(ACCOUNT, "Cat Videos")
+#API.container_create(ACCOUNT, "Work")
+API.container_create(ACCOUNT, "img")
+API.container_create(ACCOUNT, "static")
+API.object_create(ACCOUNT, "static", file_or_path="./no_image.png")
 
 app = Flask(__name__, static_url_path='')
 
@@ -68,14 +77,45 @@ def download_object(cont, obj):
     return Response(stream, direct_passthrough=True,
                     mimetype=meta['mime_type'], headers=headers)
 
+@app.route('/api/containers/<cont>/objects/<obj>/preview')
+def preview_object(cont, obj):
+    try:
+        meta, stream = API.object_fetch(ACCOUNT, cont, obj=obj)
+        ext = obj.split(".")
+        ext = '.' + ext[len(ext)-1].lower()
+        mimetypes.init()
+        img_type = tuple(get_extensions_for_type('image'))
+        if ext in img_type:
+            headers = {
+                "Content-Disposition": "filename=%s" % meta['name']
+            }
+            return Response(stream, direct_passthrough=True,
+                    mimetype=mimetypes.types_map[ext], headers=headers)
+        else:
+            meta, stream = API.object_fetch(ACCOUNT, "static", obj="no_image.png")
+            ext = ".png"
+            headers = {
+                "Content-Disposition": "filename=%s" % meta['name']
+            }
+            return Response(stream, direct_passthrough=True,
+                    mimetype=mimetypes.types_map[ext], headers=headers)
+    except Exception as e:
+        meta, stream = API.object_fetch(ACCOUNT, "static", obj="no_image.png")
+        ext = ".png"
+        headers = {
+                "Content-Disposition": "filename=%s" % meta['name']
+            }
+        return Response(stream, direct_passthrough=True,
+                    mimetype=mimetypes.types_map[ext], headers=headers)
+
 
 @app.route('/api/containers/<cont>/objects/search/<prefix>', methods=['GET'])
 @app.route('/api/containers/<cont>/objects/<marker>', methods=['GET'])
 @app.route('/api/containers/<cont>/objects/', methods=['GET'])
 @app.route('/api/containers/<cont>/objects', methods=['GET'])
 def list_objects(cont, marker=None, prefix=None):
-    res = API.object_list(ACCOUNT, cont, limit=20, marker=marker,
-                          prefix=prefix)
+    res = API.object_list(ACCOUNT, cont, limit=20000, marker=marker,
+                          prefix=prefix, properties=True)
     return jsonify(**res)
 
 
@@ -88,4 +128,4 @@ def list_containers(marker=None):
 
 
 if __name__ == "__main__":
-    app.run(port=BROWSER_PORT)
+    app.run(host='0.0.0.0',port=BROWSER_PORT)
