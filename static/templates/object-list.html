@@ -1,14 +1,23 @@
 <div class="col-md-12 infoArea">
   <ng-include src="'templates/searchbar.html'"></ng-include>
 </div>
+<ng-include src="'templates/dropzone.html'"></ng-include>
 <table ng-show="objects.length > 0" class="table table-striped">
   <tr>
     <th>Name</th>
+    <th>Preview</th>
+    <th>Faces</th>
+    <th>Category</th>
+    <th>Confidence</th>
     <th>Size</th>
     <th>&nbsp;</th>
   </tr>
   <tr ng-repeat='obj in objects'>
     <td>{{obj.name}}</td>
+    <td><img src="{{preview(obj.name)}}" style="width:100px;height:100px;"></td>
+    <td>{{obj.properties.faces}}</td>
+    <td>{{obj.properties.autocategory}}</td>
+    <td>{{obj.properties.autocategoryconfidence}}</td>
     <td>{{obj.size | filesize}}</td>
     <td><a href="{{download(obj.name)}}" class="glyphicon glyphicon-download-alt" aria-hidden="true"></a></td>
   </tr>

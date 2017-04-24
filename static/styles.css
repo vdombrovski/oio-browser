@@ -86,6 +86,6 @@ $clr-status-fail: #8b272d;
 
 .pull-bottom {
   width: 98%;
-  position: absolute;
+  #position: absolute;
   bottom: 0;
 }
