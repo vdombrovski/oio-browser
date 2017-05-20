@@ -2,6 +2,7 @@ from flask import Flask, send_from_directory, request, jsonify, Response
 from oio.api.object_storage import ObjectStorageAPI
 import optparse
 import mimetypes
+from elasticsearch import Elasticsearch
 
 
 def parse():
@@ -44,6 +45,15 @@ API.container_create(ACCOUNT, "static")
 API.object_create(ACCOUNT, "static", file_or_path="./no_image.png")
 
 app = Flask(__name__, static_url_path='')
+#app.debug = True
+if app.debug is not True:   
+    import logging
+    from logging.handlers import RotatingFileHandler
+    file_handler = RotatingFileHandler('python.log', maxBytes=1024 * 1024 * 100, backupCount=20)
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
 
 
 @app.route('/')
@@ -85,15 +95,22 @@ def preview_object(cont, obj):
         ext = '.' + ext[len(ext)-1].lower()
         mimetypes.init()
         img_type = tuple(get_extensions_for_type('image'))
+        video_type = tuple(get_extensions_for_type('video'))
         if ext in img_type:
             headers = {
                 "Content-Disposition": "filename=%s" % meta['name']
             }
             return Response(stream, direct_passthrough=True,
                     mimetype=mimetypes.types_map[ext], headers=headers)
+        elif ext in video_type:
+            headers = {
+                "Content-Disposition": "inline; filename=%s" % meta['name']
+            }
+            return Response(stream, direct_passthrough=True,
+                    mimetype=mimetypes.types_map[ext], headers=headers)
         else:
-            meta, stream = API.object_fetch(ACCOUNT, "static", obj="no_image.png")
-            ext = ".png"
+            #meta, stream = API.object_fetch(ACCOUNT, "static", obj="no_image.png")
+            #ext = ".png"
             headers = {
                 "Content-Disposition": "filename=%s" % meta['name']
             }
@@ -110,12 +127,89 @@ def preview_object(cont, obj):
 
 
 @app.route('/api/containers/<cont>/objects/search/<prefix>', methods=['GET'])
+def search_objects(cont, prefix):
+    es = Elasticsearch(["192.168.1.134"])
+    #res = es.search(index="grid-index", doc_type="image", body={"filter": { "match": { "properties.autocategory": prefix } } })
+    query = []
+    for pref in prefix.split(" "):
+        if pref:
+            regexp = {
+                'regexp': { 'properties.autocategory': '.*%s.*'%pref }
+                }
+            query.append(regexp)
+            regexp = {
+                'regexp': { 'name': '.*%s.*'%pref }
+                }
+            query.append(regexp)
+    #print query
+    #res = es.search(index="grid-index", doc_type="image", body={"query": { "bool": { "should": [ { "regexp": { "properties.autocategory": query } }, { "regexp": { "name": query } } ] } }})
+    res = es.search(index="grid-index", doc_type="image", body={"from" : 0, "size" : 100, "query": { "bool": { "should": query } }})
+    #print res
+    res_search = {}
+    objects = []
+
+    for hit in res["hits"]["hits"]:
+        if hit['_source']['mime_type'].split("/")[0] == "image":
+            imaget = True
+        else:
+            imaget = False
+        object = {
+	    'hash': hit['_source']['hash'],
+            'mime_type': hit['_source']['mime_type'],
+            'name': hit['_source']['name'],
+            'properties': hit['_source']['properties'],
+            'size': hit['_source']['length'],
+            'image': imaget
+            }
+        objects.append(object)
+
+    properties = {
+        'sys.account': ACCOUNT,
+        'sys.ns': NAMESPACE,
+        'sys.user.name': cont
+        }
+
+    res_search = {
+        'objects': objects,
+        'properties': properties
+        }
+    return jsonify(**res_search)
+
 @app.route('/api/containers/<cont>/objects/<marker>', methods=['GET'])
 @app.route('/api/containers/<cont>/objects/', methods=['GET'])
 @app.route('/api/containers/<cont>/objects', methods=['GET'])
 def list_objects(cont, marker=None, prefix=None):
-    res = API.object_list(ACCOUNT, cont, limit=20000, marker=marker,
+    mimetypes.init()
+    img_type = tuple(get_extensions_for_type('image'))
+    video_type = tuple(get_extensions_for_type('video'))
+    res = API.object_list(ACCOUNT, cont, limit=100, marker=marker,
                           prefix=prefix, properties=True)
+    #res2 = {}
+    i = 0
+    for obj in res['objects']:
+        ext = obj['name'].split(".")
+        ext = '.' + ext[len(ext)-1].lower()
+        #print ext
+        if ext in img_type:
+            res['objects'][i]['image'] = True
+        elif ext in video_type:
+            res['objects'][i]['video'] = True
+            res['objects'][i]['mime_type'] = mimetypes.types_map[ext]
+        elif ext == ".mkv":
+            res['objects'][i]['other'] = True
+        else:
+            res['objects'][i]['other'] = True
+            try:
+                mtype = mimetypes.types_map[ext]
+            except Exception as e:
+                print e
+                pass
+            else:
+                res['objects'][i]['mime_type'] = mimetypes.types_map[ext]
+        #res2 += obj
+        i += 1
+    print res
+    
     return jsonify(**res)
 
 
@@ -128,4 +222,4 @@ def list_containers(marker=None):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=BROWSER_PORT)
+    app.run(host='0.0.0.0',port=BROWSER_PORT,threaded=True)

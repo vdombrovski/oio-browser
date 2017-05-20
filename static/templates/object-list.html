@@ -2,6 +2,7 @@
   <ng-include src="'templates/searchbar.html'"></ng-include>
 </div>
 <ng-include src="'templates/dropzone.html'"></ng-include>
+
 <table ng-show="objects.length > 0" class="table table-striped">
   <tr>
     <th>Name</th>
@@ -14,7 +15,13 @@
   </tr>
   <tr ng-repeat='obj in objects'>
     <td>{{obj.name}}</td>
-    <td><img src="{{preview(obj.name)}}" style="width:100px;height:100px;"></td>
+    <td ng-if="obj.image == true"><img src="{{preview(obj.name)}}" style="width:100px;height:100px;"></td>
+    <td ng-if="obj.video == true">
+        <video width="160" height="120" controls autobuffer preload="auto">
+            <source type="{{obj.mime_type}}" src="{{preview(obj.name)}}">
+        </video>
+    </td>
+    <td ng-if="obj.other == true"><object data="{{preview(obj.name)}}" type="{{obj.mime_type}}" style="width:100px;height:200px;"></td>
     <td>{{obj.properties.faces}}</td>
     <td>{{obj.properties.autocategory}}</td>
     <td>{{obj.properties.autocategoryconfidence}}</td>
