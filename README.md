@@ -14,6 +14,20 @@ First, get the official OPENIO docker image [here](http://docs.openio.io/docker-
 # Example
 $ docker run -ti -e OPENIO_IPADDR=[IP_ADDRESS] --net=host openio/sds
 ```
+Instal npm:
+
+Debian/Ubuntu:
+
+```sh
+$ apt-get install npm
+```
+
+Centos:
+
+```sh
+$ yum install -y npm.x86_64
+```
+
 Install elasticsearch:
 
 Debian/Ubuntu:
