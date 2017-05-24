@@ -14,15 +14,22 @@ First, get the official OPENIO docker image [here](http://docs.openio.io/docker-
 # Example
 $ docker run -ti -e OPENIO_IPADDR=[IP_ADDRESS] --net=host openio/sds
 ```
+Install elasticsearch:
+
+Debian/Ubuntu:
+https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+
+Centos:
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/rpm.html
 
 Then install the browser
 
 ```sh
 $ git clone [repo]
 $ cd oio-browser
-$ virtualenv2 env
-$ source env/bin/activate
 $ pip install -r requirements.txt
+$ pip install elasticsearch
 $ npm i
 ```
 
