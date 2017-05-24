@@ -17,6 +17,7 @@ $ docker run -ti -e OPENIO_IPADDR=[IP_ADDRESS] --net=host openio/sds
 Install elasticsearch:
 
 Debian/Ubuntu:
+
 https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
 
 Centos:
@@ -36,7 +37,9 @@ $ npm i
 And finally...
 
 ```sh
-$ python2 app.py --url [IP_ADDRESS]:6006
+$ python app.py -e <elasticsearch IP> -u http://[oioproxy_IP]:[oioproxy_PORT] -n [oio_namespace] -a [oio_account] -p [interface_port]
+e.g.
+$ python app.py -e 10.0.0.48 -u http://10.0.0.44:6006 -n OPENIO -a ACCOUNT_GRID2 -p 8080
 ```
 
 Now head on to http://localhost:8000 and enjoy!
