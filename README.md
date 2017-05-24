@@ -32,6 +32,8 @@ $ yum install -y npm.x86_64
 
 Install elasticsearch:
 
+You will need java 8 (openjdk/jre is ok)
+
 Debian/Ubuntu:
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
