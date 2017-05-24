@@ -14,7 +14,7 @@ First, get the official OPENIO docker image [here](http://docs.openio.io/docker-
 # Example
 $ docker run -ti -e OPENIO_IPADDR=[IP_ADDRESS] --net=host openio/sds
 ```
-Instal npm:
+Install npm:
 
 Debian/Ubuntu:
 
@@ -37,6 +37,25 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
 Centos:
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/rpm.html
+
+Install oio-sds python module:
+
+Debian/Ubuntu:
+
+```sh
+$ echo "deb http://mirror.openio.io/pub/repo/openio/sds/16.10/$(lsb_release -i -s)/ $(lsb_release -c -s)/" | sudo tee /etc/apt/sources.list.d/openio-sds.list
+$ sudo apt-get install curl -y
+$ curl http://mirror.openio.io/pub/repo/openio/APT-GPG-KEY-OPENIO-0 | sudo apt-key add -
+$ sudo apt-get update; sudo apt-get install openio-sds
+```
+
+Centos:
+
+```sh
+$ yum -y install http://mirror.openio.io/pub/repo/openio/sds/16.10/el/openio-sds-release-16.10-1.el.noarch.rpm
+$ yum -y install openio-sds-server-3.2.3-1.el7.oio.x86_64
+```
+
 
 Then install the browser
 
