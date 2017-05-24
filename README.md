@@ -1,6 +1,8 @@
 OpenIO Browser
 ===
 
+This is a demo feel free to improve it
+
 Setup
 ---
 
