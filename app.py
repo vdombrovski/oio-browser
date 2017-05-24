@@ -11,6 +11,7 @@ def parse():
     parser.add_option("-u", "--url", help="OIO-Proxy IP:PORT")
     parser.add_option("-a", "--account", help="Account to use")
     parser.add_option("-p", "--port", help="OpenIO browser ports")
+    parser.add_option("-e", "--elasticsearch", help="elasticsearch IP")
     options, _ = parser.parse_args()
     return options
 
@@ -29,6 +30,7 @@ def init_sds_osapi(ns, url):
 options = parse()
 
 PROXY_URL = options.url
+ELASTICSEARCH = options.elasticsearch
 BROWSER_PORT = options.port or 8000
 if not options.url:
     raise ValueError('Please set oioproxy url using --url parameter')
@@ -43,10 +45,11 @@ API = init_sds_osapi(NAMESPACE, PROXY_URL)
 API.container_create(ACCOUNT, "img")
 API.container_create(ACCOUNT, "static")
 API.object_create(ACCOUNT, "static", file_or_path="./no_image.png")
+#API.object_create(ACCOUNT, "static", file_or_path="./openio.png")
 
 app = Flask(__name__, static_url_path='')
 #app.debug = True
-if app.debug is not True:   
+if app.debug is not True:
     import logging
     from logging.handlers import RotatingFileHandler
     file_handler = RotatingFileHandler('python.log', maxBytes=1024 * 1024 * 100, backupCount=20)
@@ -89,6 +92,7 @@ def download_object(cont, obj):
 
 @app.route('/api/containers/<cont>/objects/<obj>/preview')
 def preview_object(cont, obj):
+    print cont
     try:
         meta, stream = API.object_fetch(ACCOUNT, cont, obj=obj)
         ext = obj.split(".")
@@ -128,8 +132,7 @@ def preview_object(cont, obj):
 
 @app.route('/api/containers/<cont>/objects/search/<prefix>', methods=['GET'])
 def search_objects(cont, prefix):
-    es = Elasticsearch(["192.168.1.134"])
-    #res = es.search(index="grid-index", doc_type="image", body={"filter": { "match": { "properties.autocategory": prefix } } })
+    es = Elasticsearch([ELASTICSEARCH])
     query = []
     for pref in prefix.split(" "):
         if pref:
@@ -141,20 +144,20 @@ def search_objects(cont, prefix):
                 'regexp': { 'name': '.*%s.*'%pref }
                 }
             query.append(regexp)
-    #print query
-    #res = es.search(index="grid-index", doc_type="image", body={"query": { "bool": { "should": [ { "regexp": { "properties.autocategory": query } }, { "regexp": { "name": query } } ] } }})
-    res = es.search(index="grid-index", doc_type="image", body={"from" : 0, "size" : 100, "query": { "bool": { "should": query } }})
+    res = es.search(index=ACCOUNT.lower(), doc_type=cont.lower(), body={"from" : 0, "size" : 100, "query": { "bool": { "should": query } }})
     #print res
     res_search = {}
     objects = []
-
+    img_type = tuple(get_extensions_for_type('image'))
     for hit in res["hits"]["hits"]:
-        if hit['_source']['mime_type'].split("/")[0] == "image":
+        ext = hit['_source']['name'].split(".")
+        ext = '.' + ext[len(ext)-1].lower()
+        if ext in img_type:
             imaget = True
         else:
             imaget = False
         object = {
-	    'hash': hit['_source']['hash'],
+            'hash': hit['_source']['hash'],
             'mime_type': hit['_source']['mime_type'],
             'name': hit['_source']['name'],
             'properties': hit['_source']['properties'],
@@ -209,7 +212,7 @@ def list_objects(cont, marker=None, prefix=None):
         #res2 += obj
         i += 1
     print res
-    
+
     return jsonify(**res)
 
 
