@@ -83,6 +83,7 @@ Now head on to http://localhost:8000 and enjoy!
 
 > The default account is *default*, support for more accounts coming soon
 
+If you need any help feel free to join openio-community.slack.com
 
 TODO List
 ---
