@@ -8,7 +8,7 @@ You can find a blog post regarding the core configuration and the tensorflow scr
 Setup
 ---
 
-*You need node, npm, python2.7*
+*You need node, npm, python2.7, elasticsearch*
 
 First, get the official OPENIO docker image [here](http://docs.openio.io/docker-image/), and run it with --net-host and an accessible IP Address:
 
