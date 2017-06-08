@@ -2,7 +2,7 @@ OpenIO Browser
 ===
 
 This is a demo feel free to improve it.  
-This fork was created for the OpenIO event-drven data processing webinar demo:https://youtu.be/bQdk2JRMU3w?t=1560  
+This fork was created for the OpenIO event-driven data processing webinar demo:https://youtu.be/bQdk2JRMU3w?t=1560  
 You can find a blog post regarding the core configuration and the tensorflow script here: http://www.openio.io/blog/product/detect-patterns-in-pictures-at-scale-using-tensorflow-and-openio-grid-for-apps
 
 Setup
