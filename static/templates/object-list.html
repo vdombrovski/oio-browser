@@ -17,6 +17,7 @@
     <td>{{obj.name}}</td>
     <td ng-if="obj.image == true"><a href="{{preview(obj.name)}}" data-lightbox="collection" data-title="{{obj.name}}"><img src="{{preview(obj.name)}}" style="width:100px;"></a></td>
     <td ng-if="obj.video == true">
+        <a href="{{preview(obj.name)}}" target="_blank">open</a>
         <!-- <video width="160" height="120" controls autobuffer preload="auto"> -->
            <!-- <source type="{{obj.mime_type}}" src="{{preview(obj.name)}}"> -->
         <!-- </video> -->
