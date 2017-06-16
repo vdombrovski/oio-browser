@@ -3,7 +3,7 @@
 <h3 class="gray">My containers</h3>
 <ul class="nav nav-pills nav-stacked">
   <li ng-class="{'active': (cont[0] == currentCont)}"
-      ng-repeat='cont in containers'>
-    <a ng-click="changeCurrentContainer(cont[0])" class="oionav" href="#">{{cont[0]}}</a>
+     ng-repeat='cont in containers'>
+      <a ng-click="changeCurrentContainer(cont[0])" class="oionav" href="#">{{cont[0]}} {{cont[1]}} files {{cont[2] | filesize}}</a>
   </li>
 </ul>

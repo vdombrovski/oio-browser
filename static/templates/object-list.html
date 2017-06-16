@@ -15,13 +15,14 @@
   </tr>
   <tr ng-repeat='obj in objects'>
     <td>{{obj.name}}</td>
-    <td ng-if="obj.image == true"><img src="{{preview(obj.name)}}" style="width:100px;height:100px;"></td>
+    <td ng-if="obj.image == true"><a href="{{preview(obj.name)}}" data-lightbox="collection" data-title="{{obj.name}}"><img src="{{preview(obj.name)}}" style="width:100px;"></a></td>
     <td ng-if="obj.video == true">
-        <video width="160" height="120" controls autobuffer preload="auto">
-            <source type="{{obj.mime_type}}" src="{{preview(obj.name)}}">
-        </video>
+        <!-- <video width="160" height="120" controls autobuffer preload="auto"> -->
+           <!-- <source type="{{obj.mime_type}}" src="{{preview(obj.name)}}"> -->
+        <!-- </video> -->
     </td>
-    <td ng-if="obj.other == true"><object data="{{preview(obj.name)}}" type="{{obj.mime_type}}" style="width:100px;height:200px;"></td>
+    <!-- <td ng-if="obj.other == true"><object data="{{preview(obj.name)}}" type="{{obj.mime_type}}" style="width:100px;height:200px;" autostart="false"></td> -->
+    <td ng-if="obj.other == true"></td>
     <td>{{obj.properties.faces}}</td>
     <td>{{obj.properties.autocategory}}</td>
     <td>{{obj.properties.autocategoryconfidence}}</td>

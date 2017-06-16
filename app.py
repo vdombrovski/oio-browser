@@ -31,7 +31,7 @@ options = parse()
 
 PROXY_URL = options.url
 ELASTICSEARCH = options.elasticsearch
-BROWSER_PORT = options.port or 8000
+BROWSER_PORT = int(options.port) or 8000
 if not options.url:
     raise ValueError('Please set oioproxy url using --url parameter')
 NAMESPACE = options.namespace or 'OPENIO'
@@ -92,7 +92,7 @@ def download_object(cont, obj):
 
 @app.route('/api/containers/<cont>/objects/<obj>/preview')
 def preview_object(cont, obj):
-    print cont
+    #print cont
     try:
         meta, stream = API.object_fetch(ACCOUNT, cont, obj=obj)
         ext = obj.split(".")
@@ -185,7 +185,7 @@ def list_objects(cont, marker=None, prefix=None):
     mimetypes.init()
     img_type = tuple(get_extensions_for_type('image'))
     video_type = tuple(get_extensions_for_type('video'))
-    res = API.object_list(ACCOUNT, cont, limit=100, marker=marker,
+    res = API.object_list(ACCOUNT, cont, limit=10000, marker=marker,
                           prefix=prefix, properties=True)
     #res2 = {}
     i = 0
@@ -205,14 +205,14 @@ def list_objects(cont, marker=None, prefix=None):
             try:
                 mtype = mimetypes.types_map[ext]
             except Exception as e:
-                print e
+                #print e
                 pass
             else:
                 res['objects'][i]['mime_type'] = mimetypes.types_map[ext]
         #res2 += obj
         i += 1
-    print res
-
+    #print res
+    
     return jsonify(**res)
 
 
