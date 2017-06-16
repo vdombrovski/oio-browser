@@ -1,0 +1,4 @@
+<div id="dropzone" fixdragleave class="col-md-11 well drop-zone pull-bottom" nv-file-drop nv-file-over uploader="uploader">
+  <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span><br>
+      Drop files to upload
+</div>

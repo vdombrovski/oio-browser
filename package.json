@@ -13,6 +13,7 @@
   "dependencies": {
     "angular": "^1.5.8",
     "angular-file-upload": "^2.3.4",
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "lightbox2": "^2.9.0"
   }
 }
