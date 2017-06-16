@@ -6,6 +6,7 @@ function getFactory($http) {
   var service = {
     'getObjects': getObjects,
     'getContainers': getContainers,
+    'createContainer': createContainer,
     'searchObjects': searchObjects
   }
   return function() {
@@ -22,6 +23,10 @@ function getFactory($http) {
 
   function getContainers(cb) {
       $http.get('/api/containers').then(cb);
+  }
+
+  function createContainer(container, cb) {
+      $http.get('/api/containers/' + container +'/create').then(cb);
   }
 
 }

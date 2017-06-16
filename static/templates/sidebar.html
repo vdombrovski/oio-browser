@@ -1,6 +1,10 @@
 <h2 class="gray">OpenIO Browser</h2>
 <span class="divider"></span>
 <h3 class="gray">My containers</h3>
+<button class="btn btn-default " ng-click="createContainer(ccontainer.c)">
+          <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+</button>
+<input type="text" ng-model="ccontainer.c" class="form-control " placeholder="name" ng-click="ccontainer.c = ''; created=false;"/>
 <ul class="nav nav-pills nav-stacked">
   <li ng-class="{'active': (cont[0] == currentCont)}"
      ng-repeat='cont in containers'>

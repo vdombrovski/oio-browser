@@ -9,8 +9,10 @@ function getController($scope, apiRequest, FileUploader) {
   $scope.containerInfo = {};
   $scope.currentCont = "";
   $scope.searchedObject = {"s": ""};
+  $scope.ccontainer = {"c": ""};
   $scope.uploader = new FileUploader({"autoUpload": true});
   $scope.didSearch = false;
+  $scope.created = false;
 
   $scope.apiRequest = new apiRequest();
 
@@ -18,6 +20,7 @@ function getController($scope, apiRequest, FileUploader) {
   $scope.preview = getPreviewUrl;
   $scope.changeCurrentContainer = changeContainer;
   $scope.doSearch = doSearch;
+  $scope.createContainer = createContainer;
 
   (function() {
     $scope.apiRequest.getContainers(function(res) {
@@ -36,6 +39,19 @@ function getController($scope, apiRequest, FileUploader) {
   function getObjects(container) {
     $scope.apiRequest.getObjects(container, function(res) {
       $scope.objects = res.data.objects;
+    });
+  }
+
+  function createContainer(ccontainer) {
+    $scope.apiRequest.createContainer(ccontainer, function(res) {
+      $scope.created = true;
+      $scope.currentCont = ccontainer;
+      $scope.uploader.url = '/api/containers/' + $scope.currentCont + '/objects';
+      getObjects($scope.currentCont);
+      $scope.apiRequest.getContainers(function(res) {
+        $scope.containers = res.data.containers;
+        $scope.containerInfo = res.data.info;
+      });
     });
   }
 

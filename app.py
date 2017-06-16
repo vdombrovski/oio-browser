@@ -30,7 +30,7 @@ def init_sds_osapi(ns, url):
 options = parse()
 
 PROXY_URL = options.url
-ELASTICSEARCH = options.elasticsearch
+ELASTICSEARCH = options.elasticsearch or "127.0.0.1"
 BROWSER_PORT = int(options.port) or 8000
 if not options.url:
     raise ValueError('Please set oioproxy url using --url parameter')
@@ -215,6 +215,10 @@ def list_objects(cont, marker=None, prefix=None):
     
     return jsonify(**res)
 
+@app.route('/api/containers/<cont>/create')
+def create_container(cont):
+    res = API.container_create(ACCOUNT, cont)
+    return "200"
 
 @app.route('/api/containers/<marker>', methods=['GET'])
 @app.route('/api/containers/', methods=['GET'])
