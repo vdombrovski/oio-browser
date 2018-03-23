@@ -25,7 +25,7 @@ def init_sds_osapi(ns, url):
     try:
         return ObjectStorageAPI(ns, url)
     except Exception as e:
-        raise Exception('Could not access API at %s' % url)
+        raise Exception('Could not access API at %s: %s' % (url, e))
 
 options = parse()
 
@@ -36,15 +36,6 @@ if not options.url:
 NAMESPACE = options.namespace or 'OPENIO'
 ACCOUNT = options.account or 'default'
 API = init_sds_osapi(NAMESPACE, PROXY_URL)
-
-# Create some containers for now
-#API.container_create(ACCOUNT, "Documents")
-#API.container_create(ACCOUNT, "Cat Videos")
-#API.container_create(ACCOUNT, "Work")
-API.container_create(ACCOUNT, "img")
-API.container_create(ACCOUNT, "static")
-API.object_create(ACCOUNT, "static", file_or_path="./no_image.png")
-#API.object_create(ACCOUNT, "static", file_or_path="./openio.png")
 
 app = Flask(__name__, static_url_path='')
 #app.debug = True
