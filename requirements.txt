@@ -1,2 +1,6 @@
 Flask >= 0.11.1
 -e git://github.com/open-io/oio-sds.git#egg=openio-sds
+pyyaml
+eventlet
+requests
+six
