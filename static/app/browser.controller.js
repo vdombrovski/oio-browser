@@ -1,9 +1,9 @@
 var app = angular.module("oioBrowser");
 
-app.controller("browserController", ['$scope', 'apiRequest', 'FileUploader', getController]);
+app.controller("browserController", ['$scope', 'apiRequest', 'FileUploader', '$timeout', getController]);
 
 
-function getController($scope, apiRequest, FileUploader) {
+function getController($scope, apiRequest, FileUploader, $timeout) {
   $scope.objects = [];
   $scope.allObjects = [];
   $scope.containers = [];
@@ -32,22 +32,24 @@ function getController($scope, apiRequest, FileUploader) {
   $scope.totalPages = 0;
   $scope.paginatorArray = [];
 
-  (function() {
-    $scope.apiRequest.getContainers(function(res) {
-      $scope.containers = res.data.containers;
-      $scope.currentCont = res.data.containers[0][0];
-      $scope.containerInfo = res.data.info || "";
+  refresh();
 
-      getObjects($scope.currentCont);
-      $scope.uploader.url = '/api/containers/' + $scope.currentCont + '/objects';
-
-      $scope.uploader.onSuccessItem = function(d) {
+  function refresh() {
+      $scope.apiRequest.getContainers(function(res) {
+        $scope.containers = res.data.containers;
+        $scope.currentCont = res.data.containers[0][0];
+        $scope.containerInfo = res.data.info || "";
         getObjects($scope.currentCont);
-      }
-    });
-  })()
+        $scope.uploader.url = '/api/containers/' + $scope.currentCont + '/objects';
+      });
+  }
 
-  function getObjects(container) {
+  $scope.uploader.onSuccessItem = function(d) {
+      $timeout(refresh, 1000);
+  }
+
+  function getObjects() {
+    var container = angular.copy($scope.currentCont)
     $scope.apiRequest.getObjects(container, function(res) {
       // This array can get very long, so we never bind it as it
       // Instead, we bind to the paginated objects array

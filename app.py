@@ -2,7 +2,6 @@ from flask import Flask, send_from_directory, request, jsonify, Response
 from oio.api.object_storage import ObjectStorageAPI
 import optparse
 import mimetypes
-from elasticsearch import Elasticsearch
 from flask import abort
 
 
@@ -13,7 +12,6 @@ def parse():
     parser.add_option("-u", "--url", help="OIO-Proxy IP:PORT")
     parser.add_option("-a", "--account", help="Account to use")
     parser.add_option("-p", "--port", help="OpenIO browser ports")
-    parser.add_option("-e", "--elasticsearch", help="elasticsearch IP")
     options, _ = parser.parse_args()
     return options
 
@@ -32,7 +30,6 @@ def init_sds_osapi(ns, url):
 options = parse()
 
 PROXY_URL = options.url
-ELASTICSEARCH = options.elasticsearch or "127.0.0.1"
 BROWSER_PORT = int(options.port) or 8000
 if not options.url:
     raise ValueError('Please set oioproxy url using --url parameter')
@@ -131,55 +128,6 @@ def preview_object(cont, obj):
         return Response(stream, direct_passthrough=True,
                     mimetype=mimetypes.types_map[ext], headers=headers)
 
-
-@app.route('/api/containers/<cont>/objects/search/<prefix>', methods=['GET'])
-def search_objects(cont, prefix):
-    es = Elasticsearch([ELASTICSEARCH])
-    query = []
-    for pref in prefix.split(" "):
-        if pref:
-            regexp = {
-                'regexp': { 'properties.autocategory': '.*%s.*'%pref }
-                }
-            query.append(regexp)
-            regexp = {
-                'regexp': { 'name': '.*%s.*'%pref }
-                }
-            query.append(regexp)
-    res = es.search(index=ACCOUNT.lower(), doc_type=cont.lower(), body={"from" : 0, "size" : 100, "query": { "bool": { "should": query } }})
-    #print res
-    res_search = {}
-    objects = []
-    img_type = tuple(get_extensions_for_type('image'))
-    for hit in res["hits"]["hits"]:
-        ext = hit['_source']['name'].split(".")
-        ext = '.' + ext[len(ext)-1].lower()
-        if ext in img_type:
-            imaget = True
-        else:
-            imaget = False
-        object = {
-            'hash': hit['_source']['hash'],
-            'mime_type': hit['_source']['mime_type'],
-            'name': hit['_source']['name'],
-            'properties': hit['_source']['properties'],
-            'size': hit['_source']['length'],
-            'image': imaget
-            }
-        objects.append(object)
-
-    properties = {
-        'sys.account': ACCOUNT,
-        'sys.ns': NAMESPACE,
-        'sys.user.name': cont
-        }
-
-    res_search = {
-        'objects': objects,
-        'properties': properties
-        }
-    return jsonify(**res_search)
-
 @app.route('/api/containers/<cont>/objects/<marker>', methods=['GET'])
 @app.route('/api/containers/<cont>/objects/', methods=['GET'])
 @app.route('/api/containers/<cont>/objects', methods=['GET'])
@@ -192,12 +140,10 @@ def list_objects(cont, marker=None, prefix=None):
                               prefix=prefix, properties=True)
     except Exception as e:
         return abort(404)
-    #res2 = {}
     i = 0
     for obj in res['objects']:
         ext = obj['name'].split(".")
         ext = '.' + ext[len(ext)-1].lower()
-        #print ext
         if ext in img_type:
             res['objects'][i]['image'] = True
         elif ext in video_type:
@@ -210,13 +156,10 @@ def list_objects(cont, marker=None, prefix=None):
             try:
                 mtype = mimetypes.types_map[ext]
             except Exception as e:
-                #print e
                 pass
             else:
                 res['objects'][i]['mime_type'] = mimetypes.types_map[ext]
-        #res2 += obj
         i += 1
-    #print res
 
     return jsonify(**res)
 
